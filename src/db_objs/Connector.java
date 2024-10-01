@@ -26,27 +26,29 @@ public class Connector {
             //establish a conn wiht the database using the config
             Connection connection = DriverManager.getConnection(DB_URL,DB_USERNAME,DB_PASSWORD);
 
-            String encrypted_password= Encryptor.encrypt(password, Encryptor.getSecretKey());
             //create sql query
-            PreparedStatement statement = connection.prepareStatement(
-                "Select * FROM users WHERE username =? and password = ?");
+            PreparedStatement statement = connection.prepareStatement("Select * FROM users WHERE username =? ");
             //replace the ?
             statement.setString(1, username);
-            statement.setString(2,encrypted_password);
-
+    
             //execute query and store into a result set
             ResultSet resultSet = statement.executeQuery();
 
             //next()return s true or  false
 
             if(resultSet.next()){
-                //get id
-                int userID= resultSet.getInt("cid");
-                //get current balance
-                BigDecimal currentBalance = resultSet.getBigDecimal("current_balance");
+                //get the stored password
+                String storedPassword = resultSet.getString("password");
 
-                //returnn user object
-                return new User(userID,username, password, currentBalance);
+                if (Encryptor.validatePassword(password, storedPassword)) {
+                    //get id
+                    int userID= resultSet.getInt("cid");
+                    //get current balance
+                    BigDecimal currentBalance = resultSet.getBigDecimal("current_balance");
+
+                    //returnn user object
+                    return new User(userID,username, password, currentBalance);
+                }
             }
 
 
@@ -68,7 +70,7 @@ public class Connector {
         
         try{
             //encryption logic
-            String encrypted_password=  Encryptor.encrypt(paSsword, Encryptor.getSecretKey());
+            String hashed_password=  Encryptor.encrypt(paSsword);
 
 
             //check username has already been taken
@@ -79,7 +81,7 @@ public class Connector {
                     " INSERT INTO users(username,password) VALUES(?,?)");
                 
                 preparedStatement.setString(1,username);
-                preparedStatement.setString(2, encrypted_password);   
+                preparedStatement.setString(2, hashed_password);   
                 preparedStatement.executeUpdate();
 
                 return true;
