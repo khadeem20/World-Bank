@@ -26,7 +26,7 @@ public class Connector {
             //establish a conn wiht the database using the config
             Connection connection = DriverManager.getConnection(DB_URL,DB_USERNAME,DB_PASSWORD);
 
-            String encrypted_password= Encryptor.encrypt(password, Encryptor.secretKey);
+            String encrypted_password= Encryptor.encrypt(password, Encryptor.getSecretKey());
             //create sql query
             PreparedStatement statement = connection.prepareStatement(
                 "Select * FROM users WHERE username =? and password = ?");
@@ -68,7 +68,7 @@ public class Connector {
         
         try{
             //encryption logic
-            String encrypted_password=  Encryptor.encrypt(paSsword, Encryptor.secretKey);
+            String encrypted_password=  Encryptor.encrypt(paSsword, Encryptor.getSecretKey());
 
 
             //check username has already been taken

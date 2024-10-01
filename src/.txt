@@ -1,6 +1,9 @@
-* encrypt password before storage and compare the encryptedd entered password when using to check
+
 * make error handling more explicit
     - login errors
     - registration errors
     -failed transactions
     -prevent user from transfering to them self
+
+
+* encrypt password before storage and compare the encryptedd entered password when using to check

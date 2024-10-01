@@ -1,14 +1,16 @@
 package db_objs;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.util.Base64;
 
 public class Encryptor {
 
-    public static final SecretKey secretKey = generateSecretKey();
+    private static final String KEY_FILE = "secret.key";
 
     // Method to encrypt a string using AES
     public static String encrypt(String plainText, SecretKey secretKey) throws Exception {
@@ -30,16 +32,47 @@ public class Encryptor {
         return new String(decryptedBytes);
     }
 
-    // Generate an AES secret key
-    public static SecretKey generateSecretKey(){
-        try{
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(128); // AES key size (128, 192, or 256 bits)
-            return keyGenerator.generateKey();
-        }catch(Exception e){
-            e.printStackTrace();
+    // Generate and store an AES secret key, or retrieve it from a file if already stored
+    public static SecretKey getSecretKey() {
+        File keyFile = new File(KEY_FILE);
+        if (!keyFile.exists()) {
+            try {
+                // Generate new secret key
+                SecretKey secretKey = generateSecretKey();
+
+                // Save the key to a file
+                try (FileOutputStream keyOut = new FileOutputStream(KEY_FILE)) {
+                    keyOut.write(secretKey.getEncoded());
+                }
+
+                return secretKey;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                // Read the saved key from file
+                byte[] keyBytes = new byte[16]; // AES-128 uses 16 bytes key
+                try (FileInputStream keyIn = new FileInputStream(KEY_FILE)) {
+                    keyIn.read(keyBytes);
+                }
+                return new SecretKeySpec(keyBytes, "AES");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
 
+    // Generate an AES secret key
+    public static SecretKey generateSecretKey() {
+        try {
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(128); // AES key size (128, 192, or 256 bits)
+            return keyGenerator.generateKey();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
