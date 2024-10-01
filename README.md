@@ -33,7 +33,9 @@ World Bank is a desktop application that simulates basic banking operations usin
 1. Clone the repository
 2. Open the project in your preferred Java IDE (VS Code recommended)
 3. Ensure you have the necessary dependencies in the `lib/` folder
-4. Run the main application file to start the banking app
+4. Create your own sql file with the tables user(cid PK AI, username, current_balance, password) and transactions(PK AI id, tamount, tdate, type, user_id FK)
+--make password atleast VARVHAR(100) to encompass the size of the hashed passwords--
+5. Run the main application file to start the banking app
 
 
 ## Dependencies
